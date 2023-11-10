@@ -17,7 +17,7 @@ async def main():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
-    config: Config = loadConfig("config1.env")
+    config: Config = loadConfig("config.env")
     dbConfig = config.dataBase
 
     loop = asyncio.get_event_loop()
