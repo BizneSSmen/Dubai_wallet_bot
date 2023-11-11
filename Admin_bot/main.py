@@ -14,7 +14,7 @@ async def main():
     )
     config = loadConfig("config.env").tgBot
 
-    bot: Bot = Bot(config.userToken, parse_mode="HTML")
+    bot: Bot = Bot(token='6564981419:AAGH-tz6Edur9AOlcHAG8gPvi5iDigY4hHU', parse_mode="HTML")
 
     dp: Dispatcher = Dispatcher()
 

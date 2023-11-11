@@ -12,7 +12,7 @@ from Misc.buttons_text import MainMenu, BankList, LocationList, ServiceButtons
 from Misc.message_text import AedToRub
 from DataBase import Database
 from Entities import Claim, OperationStatuses, OperationTypes
-from Utils import GetCourse
+from Utils import GetCourse, Notify
 from params import AED, FEE
 
 aedToRub: Router = Router()
@@ -173,6 +173,8 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
         claim.description = description
         db: Database = Database(pool=pool)
         data['claimId'] = await db.insertСlaim(vars(claim))
+
+        await Notify()(data['claimId'])
 
         mainMsg: Message = await message.answer(text=AedToRub.result.format(__BANK__=data['bank'][1:],
                                                                             __TARGET_AMOUNT__=claim.targetAmount,
