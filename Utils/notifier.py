@@ -1,10 +1,10 @@
 from aiohttp import ClientSession
 
-from params import NOTYFY_LINK
+from params import NOTIFY_LINK
 
 
 class Notify:
-    apiUrl: str = NOTYFY_LINK
+    apiUrl: str = NOTIFY_LINK
 
     async def __call__(self, _id: str):
         async with ClientSession() as client:
