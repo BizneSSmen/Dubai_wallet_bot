@@ -168,7 +168,7 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
                                                   __COURSE__=claim.exchangeAppliedRate + claim.fee,
                                                   __FINAL_AMOUNT__=claim.finalAmount,
                                                   __LOCATION__=data['location'][2:],
-                                                  __PHONE__=claim.phoneNumber)[2:]
+                                                  __PHONE__=claim.phoneNumber)
 
         claim.description = description
         db: Database = Database(pool=pool)
