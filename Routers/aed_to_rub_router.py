@@ -1,4 +1,5 @@
 import re
+from math import ceil
 
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
@@ -65,7 +66,7 @@ async def _amount(message: Message, state: FSMContext, bot: Bot) -> None:
 
         claim.fee = FEE
         claim.exchangeAppliedRate = await GetCourse(*AED)()
-        claim.finalAmount = round((claim.exchangeAppliedRate - claim.fee) * claim.targetAmount, 2)
+        claim.finalAmount = ceil((claim.exchangeAppliedRate - claim.fee) * claim.targetAmount)
 
         inlineKeyboard: InlineKeyboardBuilder = InlineKeyboardBuilder(
             [[InlineKeyboardButton(text=btnTxt.value, callback_data=f"{btnTxt.value}_bank") for btnTxt in
@@ -179,7 +180,7 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
                                                   __TARGET_AMOUNT__=claim.targetAmount,
                                                   __COURSE__=claim.exchangeAppliedRate + claim.fee,
                                                   __FINAL_AMOUNT__=claim.finalAmount,
-                                                  __LOCATION__=data['location'],
+                                                  __LOCATION__=data['location'][1:],
                                                   __PHONE__=claim.phoneNumber)[2:]
 
         claim.description = description

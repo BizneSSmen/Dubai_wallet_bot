@@ -1,4 +1,5 @@
 import re
+from math import trunc
 from pprint import pprint
 
 from aiogram import F, Router, Bot
@@ -65,7 +66,7 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
 
         claim.fee = FEE
         claim.exchangeAppliedRate = await GetCourse(*AED)()
-        claim.finalAmount = round(claim.targetAmount / (claim.exchangeAppliedRate + claim.fee), 2)
+        claim.finalAmount = trunc((claim.targetAmount / (claim.exchangeAppliedRate + claim.fee)) / 10) * 10
 
         inlineKeyboard: InlineKeyboardBuilder = InlineKeyboardBuilder(
             [[InlineKeyboardButton(text=btnTxt.value, callback_data=f"{btnTxt.value}_bank") for btnTxt in
@@ -171,7 +172,7 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
                                                   __COURSE__=claim.exchangeAppliedRate + claim.fee,
                                                   __FINAL_AMOUNT__=claim.finalAmount,
                                                   __LOCATION__=data['location'][1:],
-                                                  __PHONE__=claim.phoneNumber)
+                                                  __PHONE__=claim.phoneNumber)[2:]
         claim.description = description
 
         db: Database = Database(pool=pool)

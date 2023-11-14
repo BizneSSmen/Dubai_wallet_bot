@@ -1,4 +1,5 @@
 from enum import Enum
+from math import ceil, trunc
 
 from pydantic import (
     BaseModel,
@@ -52,3 +53,4 @@ class ClaimModel(BaseModel):
             return _str
         else:
             raise ValueError("The application cannot have the specified status")
+
