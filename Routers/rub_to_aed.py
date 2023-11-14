@@ -51,9 +51,9 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
     await message.delete()
 
     if message.text is not None:
-        claim.targetAmount = float(message.text) if message.text.isdigit() else 0
+        claim.targetAmount = int(message.text) if message.text.isdigit() else 0
 
-    if claim.targetAmount > 0:
+    if claim.targetAmount > 50_000:
         if 'errMsg' in data:
             await bot.delete_message(chat_id=message.chat.id, message_id=data['errMsg'])
             del data['errMsg']
