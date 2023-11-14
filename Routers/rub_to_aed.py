@@ -178,8 +178,6 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
         db: Database = Database(pool=pool)
         data['claimId'] = await db.insertСlaim(vars(claim))
 
-        await Notify()(data['claimId'])
-
         mainMsg: Message = await message.answer(text=RubToAed.result.format(__BANK__=data['bank'],
                                                                             __TARGET_AMOUNT__=claim.targetAmount,
                                                                             __COURSE__=claim.exchangeAppliedRate + claim.fee,
@@ -209,6 +207,8 @@ async def _accept(callback: CallbackQuery, state: FSMContext, bot: Bot, pool: Po
     data: dict = await state.get_data()  # <- GET DATA
     claim: Claim = data['claim']
     claim.status = OperationStatuses.approved
+
+    await Notify()(data['claimId'])
 
     db: Database = Database(pool=pool)
     await db.updateClaimById(data['claimId'], {'status': OperationStatuses.approved})
