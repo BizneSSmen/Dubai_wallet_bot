@@ -11,7 +11,7 @@ class GetCourse:
 
     async def __call__(self, *args, **kwargs) -> float:
         async with ClientSession() as client:
-            return round(float(etree.HTML(str(BeautifulSoup(await self.fetch(client), "html.parser"))).xpath(self.xPath)[0].text), 2)
+            return float(etree.HTML(str(BeautifulSoup(await self.fetch(client), "html.parser"))).xpath(self.xPath)[0].text)
 
     async def fetch(self, client: ClientSession):
         async with client.get(self.url) as response:

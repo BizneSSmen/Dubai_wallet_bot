@@ -1,5 +1,4 @@
 import re
-from pprint import pprint
 
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
@@ -11,6 +10,7 @@ from aiomysql import Pool
 from Misc.buttons_text import MainMenu, BankList, LocationList, ServiceButtons
 from Misc.message_text import AedToRub
 from DataBase import Database
+from Models import ClaimModel
 from Entities import Claim, OperationStatuses, OperationTypes
 from Utils import GetCourse, Notify
 from params import AED, FEE
@@ -44,7 +44,10 @@ async def _start(message: Message, state: FSMContext):
 
 
 @aedToRub.message(AedToRubStates.amount)
-async def _amount(message: Message, state: FSMContext, bot: Bot):
+async def _amount(message: Message, state: FSMContext, bot: Bot) -> None:
+    """
+    Валидация вводимой суммы в Дирхамах
+    """
     data: dict = await state.get_data()  # <- GET DATA
     claim: Claim = data['claim']
 
@@ -89,6 +92,9 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
 
 @aedToRub.callback_query(F.data.split("_")[-1] == "bank", AedToRubStates.bank)
 async def _bank(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    """
+    Выбор банка
+    """
     data: dict = await state.get_data()  # <- GET DATA
     data['bank'] = callback.data.split("_")[0]
     claim: Claim = data['claim']
@@ -116,6 +122,9 @@ async def _bank(callback: CallbackQuery, state: FSMContext, bot: Bot):
 
 @aedToRub.callback_query(F.data.split("_")[-1] == 'location', AedToRubStates.location)
 async def _location(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    """
+    Выбор локации
+    """
     data: dict = await state.get_data()  # <- GET DATA
     data['location']: str = callback.data.split("_")[0]
     claim: Claim = data['claim']
@@ -142,6 +151,9 @@ async def _location(callback: CallbackQuery, state: FSMContext, bot: Bot):
 
 @aedToRub.message(AedToRubStates.phoneNumber)
 async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool):
+    """
+    Валидация номера телефона
+    """
     data: dict = await state.get_data()  # <- GET DATA
     claim: Claim = data['claim']
 
@@ -211,9 +223,11 @@ async def _accept(callback: CallbackQuery, state: FSMContext, bot: Bot, pool: Po
 
     await bot.edit_message_reply_markup(chat_id=callback.message.chat.id, reply_markup=None, message_id=data['mainMsg'])
 
-    keyboard: ReplyKeyboardBuilder = ReplyKeyboardBuilder().add(
-        *[KeyboardButton(text=btnTxt.value) for btnTxt in MainMenu])
-    keyboard.adjust(1)
-    await callback.message.answer(text=AedToRub.instruction, reply_markup=keyboard.as_markup(resize_keyboard=True))
+    keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text=btnTxt.value)] for btnTxt in list(MainMenu)[:2]] +
+                 [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
+        resize_keyboard=True
+    )
+    await callback.message.answer(text=AedToRub.instruction, reply_markup=keyboard)
 
     await state.clear()

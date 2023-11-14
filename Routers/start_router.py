@@ -18,10 +18,13 @@ async def _start(message: Message, state: FSMContext):
 
     aedCourse: float = await GetCourse(*AED)()
 
-    keyboard: ReplyKeyboardBuilder = ReplyKeyboardBuilder().add(*[KeyboardButton(text=btnTxt.value) for btnTxt in MainMenu])
-    keyboard.adjust(1)
+    keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text=btnTxt.value)] for btnTxt in list(MainMenu)[:2]] +
+                 [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
+        resize_keyboard=True
+    )
 
-    await message.answer(reply_markup=keyboard.as_markup(resize_keyboard=True),
+    await message.answer(reply_markup=keyboard,
                          text=Service.start.format(
                              __AED_TO_RUB__=aedCourse + FEE,
                              __RUB_TO_AED__=aedCourse - FEE))
@@ -31,10 +34,13 @@ async def _start(message: Message, state: FSMContext):
 async def _cancel(message: Message, state: FSMContext):
     await state.clear()
 
-    keyboard: ReplyKeyboardBuilder = ReplyKeyboardBuilder().add(*[KeyboardButton(text=btnTxt.value) for btnTxt in MainMenu])
-    keyboard.adjust(1)
+    keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text=btnTxt.value)] for btnTxt in list(MainMenu)[:2]] +
+                 [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
+        resize_keyboard=True
+    )
 
-    await message.answer(text=Service.cancelled, reply_markup=keyboard.as_markup(resize_keyboard=True))
+    await message.answer(text=Service.cancelled, reply_markup=keyboard)
 
 
 @mainMenu.message(F.text == MainMenu.course.value)

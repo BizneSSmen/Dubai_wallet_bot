@@ -45,6 +45,9 @@ async def _start(message: Message, state: FSMContext):
 
 @rubToAed.message(RubToAedStates.amount)
 async def _amount(message: Message, state: FSMContext, bot: Bot):
+    """
+    Валидация вводимой суммы в Рублях
+    """
     data: dict = await state.get_data()  # <- GET DATA
     claim: Claim = data['claim']
 
@@ -211,9 +214,11 @@ async def _accept(callback: CallbackQuery, state: FSMContext, bot: Bot, pool: Po
 
     await bot.edit_message_reply_markup(chat_id=callback.message.chat.id, reply_markup=None, message_id=data['mainMsg'])
 
-    keyboard: ReplyKeyboardBuilder = ReplyKeyboardBuilder().add(
-        *[KeyboardButton(text=btnTxt.value) for btnTxt in MainMenu])
-    keyboard.adjust(1)
-    await callback.message.answer(text=RubToAed.instruction, reply_markup=keyboard.as_markup(resize_keyboard=True))
+    keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text=btnTxt.value)] for btnTxt in list(MainMenu)[:2]] +
+                 [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
+        resize_keyboard=True
+    )
+    await callback.message.answer(text=RubToAed.instruction, reply_markup=keyboard)
 
     await state.clear()
