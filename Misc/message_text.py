@@ -72,7 +72,7 @@ class AedToRub:
 Введите номер телефона для связи:
 '''
     phoneNumberError: str = "Некорректный номер телефона. Повторите попытку"
-    description : srt = \
+    description : str = \
 '''
 Сумма обмена: {__TARGET_AMOUNT__} AED (наличные)
 Текущий курс: {__COURSE__}
