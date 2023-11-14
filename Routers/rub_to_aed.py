@@ -167,12 +167,12 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
         await message.answer(text='Спасибо!', reply_markup=ReplyKeyboardBuilder(
             [[KeyboardButton(text=ServiceButtons.cancel.value)]]).as_markup(resize_keyboard=True))
 
-        description: str = RubToAed.descriptionformat(__BANK__=data['bank'][1:],
-                                                  __TARGET_AMOUNT__=claim.targetAmount,
-                                                  __COURSE__=claim.exchangeAppliedRate + claim.fee,
-                                                  __FINAL_AMOUNT__=claim.finalAmount,
-                                                  __LOCATION__=data['location'][1:],
-                                                  __PHONE__=claim.phoneNumber)[2:]
+        description: str = RubToAed.description.format(__BANK__=data['bank'][1:],
+                                                       __TARGET_AMOUNT__=claim.targetAmount,
+                                                       __COURSE__=claim.exchangeAppliedRate + claim.fee,
+                                                       __FINAL_AMOUNT__=claim.finalAmount,
+                                                       __LOCATION__=data['location'][1:],
+                                                       __PHONE__=claim.phoneNumber)[2:]
         claim.description = description
 
         db: Database = Database(pool=pool)

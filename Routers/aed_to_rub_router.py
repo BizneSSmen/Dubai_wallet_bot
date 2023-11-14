@@ -177,11 +177,11 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
             [[KeyboardButton(text=ServiceButtons.cancel.value)]]).as_markup(resize_keyboard=True))
 
         description: str = AedToRub.description.format(__BANK__=data['bank'][1:],
-                                                  __TARGET_AMOUNT__=claim.targetAmount,
-                                                  __COURSE__=claim.exchangeAppliedRate + claim.fee,
-                                                  __FINAL_AMOUNT__=claim.finalAmount,
-                                                  __LOCATION__=data['location'][1:],
-                                                  __PHONE__=claim.phoneNumber)[2:],
+                                                       __TARGET_AMOUNT__=claim.targetAmount,
+                                                       __COURSE__=claim.exchangeAppliedRate + claim.fee,
+                                                       __FINAL_AMOUNT__=claim.finalAmount,
+                                                       __LOCATION__=data['location'][1:],
+                                                       __PHONE__=claim.phoneNumber)[2:],
         claim.description = description
 
         db: Database = Database(pool=pool)
