@@ -1,5 +1,4 @@
 from enum import Enum
-from math import ceil, trunc
 
 from pydantic import (
     BaseModel,
@@ -45,12 +44,3 @@ class ClaimModel(BaseModel):
             return _str
         else:
             raise ValueError("Received a string that is not a valid currency")
-
-    @field_validator('currencyB', 'currencyA')
-    @classmethod
-    def roundTargetAmount(cls, _str: str):
-        if _str in OperationStatuses.__members__.values():
-            return _str
-        else:
-            raise ValueError("The application cannot have the specified status")
-

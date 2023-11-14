@@ -50,3 +50,8 @@ async def _course(message: Message):
     await message.answer(text=Service.course.format(
                              __AED_TO_RUB__=aedCourse + FEE,
                              __RUB_TO_AED__=aedCourse - FEE))
+
+
+@mainMenu.message(F.text == MainMenu.faq.value)
+async def _faq(message: Message):
+    await message.answer(text=Service.faq)
