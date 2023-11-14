@@ -183,7 +183,8 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
                                                                             __COURSE__=claim.exchangeAppliedRate + claim.fee,
                                                                             __FINAL_AMOUNT__=claim.finalAmount,
                                                                             __LOCATION__=data['location'],
-                                                                            __PHONE__=claim.phoneNumber),
+                                                                            __PHONE__=claim.phoneNumber,
+                                                                            __CLAIM_ID__=data['claimId']),
                                                 reply_markup=InlineKeyboardBuilder(
                                                     [[InlineKeyboardButton(text="Подтвердить",
                                                                            callback_data="done")]]).as_markup())

@@ -187,13 +187,13 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
         db: Database = Database(pool=pool)
         data['claimId'] = await db.insertСlaim(vars(claim))
 
-
-        mainMsg: Message = await message.answer(text=AedToRub.result.format(__BANK__=data['bank'][1:],
+        mainMsg: Message = await message.answer(text=AedToRub.result.format(__BANK__=data['bank'],
                                                                             __TARGET_AMOUNT__=claim.targetAmount,
                                                                             __COURSE__=claim.exchangeAppliedRate + claim.fee,
                                                                             __FINAL_AMOUNT__=claim.finalAmount,
                                                                             __LOCATION__=data['location'],
-                                                                            __PHONE__=claim.phoneNumber),
+                                                                            __PHONE__=claim.phoneNumber,
+                                                                            __CLAIM_ID__=data['claimId']),
                                                 reply_markup=InlineKeyboardBuilder(
                                                     [[InlineKeyboardButton(text="Подтвердить",
                                                                            callback_data="done")]]).as_markup())

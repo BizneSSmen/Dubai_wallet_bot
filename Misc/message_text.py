@@ -75,6 +75,7 @@ class AedToRub:
     result: str = \
 '''
 ✅ <b>Подтвердите данные заявки</b>:
+Номер заявки: {__CLAIM_ID__}
 
 Сумма обмена: {__TARGET_AMOUNT__} AED (наличные)
 Текущий курс: {__COURSE__}
@@ -127,6 +128,7 @@ class RubToAed:
     result: str = \
 '''
 ✅ <b>Подтвердите данные заявки</b>:
+Номер заявки: {__CLAIM_ID__}
 
 Сумма обмена: {__TARGET_AMOUNT__} RUB
 Текущий курс: {__COURSE__}
