@@ -33,7 +33,8 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
     claim.currency_B = 'AED'
     claim.currency_A = 'RUB'
     db: Database = Database(pool=pool)
-    print(await db.getRates())
+    a = await db.getRates()
+    data = {{f"{_['description']}": _} for _ in a}
 
     await message.answer(text=RubToAed.changeKbMessage,
                          reply_markup=ReplyKeyboardBuilder(
