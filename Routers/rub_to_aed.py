@@ -36,7 +36,7 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
     a = await db.getRates()
 
     # data = {{f"{_['description']}": _} for _ in a}
-    data = {{_['description']: _} for _ in a}
+    data = {_['description']: _ for _ in a}
     pprint(data)
 
 
