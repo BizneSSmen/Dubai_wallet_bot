@@ -60,7 +60,7 @@ class Database:
             async with connection.cursor() as cursor:
                 try:
                     await cursor.execute(query)
-                    result = cursor.fetchall()
+                    result =  await cursor.fetchall()
                     return result
                 except Exception as e:
                     print(f"Error executing SQL query: {e}")
