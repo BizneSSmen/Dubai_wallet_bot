@@ -34,7 +34,7 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
     claim.currency_A = 'RUB'
     db: Database = Database(pool=pool)
     a = await db.getRates()
-    a = list(a)
+
     # data = {{f"{_['description']}": _} for _ in a}
     # pprint(data)
     print(a)
