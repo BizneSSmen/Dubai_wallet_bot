@@ -28,10 +28,12 @@ class RubToAedStates(StatesGroup):
 
 
 @rubToAed.message(F.text == MainMenu.rubToAed.value)
-async def _start(message: Message, state: FSMContext):
+async def _start(message: Message, state: FSMContext, pool: Pool):
     claim: Claim = Claim()
     claim.currency_B = 'AED'
     claim.currency_A = 'RUB'
+    db: Database = Database(pool=pool)
+    print(await db.getRates())
 
     await message.answer(text=RubToAed.changeKbMessage,
                          reply_markup=ReplyKeyboardBuilder(

@@ -53,3 +53,15 @@ class Database:
                         await connection.commit()
                     except Exception as e:
                         print(f"Error executing SQL query: {e}")
+
+    async def getRates(self):
+        query = f"SELECT * FROM rates"
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                try:
+                    await cursor.execute(query)
+                    result = cursor.fetchall()
+                    return result
+                except Exception as e:
+                    print(f"Error executing SQL query: {e}")
+
