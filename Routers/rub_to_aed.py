@@ -35,6 +35,7 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
     db: Database = Database(pool=pool)
     a = await db.getRates()
     data = {{f"{_['description']}": _} for _ in a}
+    pprint(data)
 
     await message.answer(text=RubToAed.changeKbMessage,
                          reply_markup=ReplyKeyboardBuilder(
