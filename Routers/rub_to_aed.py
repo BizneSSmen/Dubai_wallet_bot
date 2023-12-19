@@ -60,14 +60,14 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
     if message.text is not None:
         claim.targetAmount = int(message.text) if message.text.isdigit() else 0
 
-    if rates.sell.sumRangeTo >= claim.targetAmount >= rates.sell.sumRangeFrom:
+    if claim.targetAmount >= rates.sell.sumRangeFrom:
         if 'errMsg' in data:
             await bot.delete_message(chat_id=message.chat.id, message_id=data['errMsg'])
             del data['errMsg']
 
         await bot.delete_message(chat_id=message.chat.id, message_id=data['mainMsg'])
 
-        claim.exchangeAppliedRate = rates.sell.value
+        claim.exchangeAppliedRate = rates.sellBig.value if claim.targetAmount > rates.sellBig.sumRangeFrom else rates.sell.value
         claim.fee = abs(rates.sell.value - rates.official.value)
         claim.finalAmount = trunc((claim.targetAmount / claim.exchangeAppliedRate) / 10) * 10
 
@@ -88,8 +88,7 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
 
     else:
         if 'errMsg' not in data:
-            errorMessage: Message = await message.answer(text=RubToAed.amountError.format(__MIN__=rates.sell.sumRangeFrom,
-                                                                                          __MAX__=rates.sell.sumRangeTo))
+            errorMessage: Message = await message.answer(text=RubToAed.amountError.format(__MIN__=rates.sell.sumRangeFrom))
             data['errMsg']: str = errorMessage.message_id
 
     await state.set_data(data=data)  # -> SET DATA
