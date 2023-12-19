@@ -37,6 +37,7 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
 
     # data = {{f"{_['description']}": _} for _ in a}
     data = {_['description']: _ for _ in a}
+    pprint(data)
     rates = Rates(**data)
     pprint(rates)
 

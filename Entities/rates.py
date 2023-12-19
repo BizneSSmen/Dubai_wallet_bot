@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class Official(BaseModel):
-    value: float = Field(serialization_alias='value', default=0)
+    value: float = Field(serialization_alias='value', default=None)
     sumRangeFrom: float = Field(alias='sum_range_from', default=None)
     sumRangeTo: float = Field(alias='sum_range_to', default=None)
 
