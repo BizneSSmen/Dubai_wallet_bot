@@ -12,7 +12,7 @@ from aiomysql import Pool
 from Misc.buttons_text import MainMenu, BankList, LocationList, ServiceButtons
 from Misc.message_text import RubToAed, Service
 from DataBase import Database
-from Entities import Claim, OperationStatuses, OperationTypes
+from Entities import Claim, OperationStatuses, OperationTypes, Rates
 from Utils import GetCourse, Notify
 from params import AED, FEE
 
@@ -37,7 +37,8 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
 
     # data = {{f"{_['description']}": _} for _ in a}
     data = {_['description']: _ for _ in a}
-    pprint(data)
+    rates = Rates(**data)
+    pprint(rates)
 
 
     await message.answer(text=RubToAed.changeKbMessage,
