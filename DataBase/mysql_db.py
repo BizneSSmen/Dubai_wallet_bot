@@ -1,5 +1,6 @@
 import aiomysql
 from aiomysql import Pool
+from Entities import Rates
 
 
 async def createPool(user: str, password: str, address: str, port: str, db: str, loop):
@@ -61,7 +62,7 @@ class Database:
                 try:
                     await cursor.execute(query)
                     result = await cursor.fetchall()
-                    return result
+                    return Rates(**result)
                 except Exception as e:
                     print(f"Error executing SQL query: {e}")
 
