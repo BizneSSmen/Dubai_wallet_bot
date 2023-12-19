@@ -35,8 +35,6 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
     db: Database = Database(pool=pool)
     rates: Rates = await db.getRates()
 
-
-
     await message.answer(text=RubToAed.changeKbMessage,
                          reply_markup=ReplyKeyboardBuilder(
                              [[KeyboardButton(text=ServiceButtons.cancel.value)]]).as_markup(resize_keyboard=True))
@@ -90,8 +88,8 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
 
     else:
         if 'errMsg' not in data:
-            errorMessage: Message = await message.answer(text=RubToAed.amountError.format(__MIN__=rates.buy.sumRangeFrom,
-                                                                                          __MAX__=rates.buy.sumRangeTo))
+            errorMessage: Message = await message.answer(text=RubToAed.amountError.format(__MIN__=rates.sell.sumRangeFrom,
+                                                                                          __MAX__=rates.sell.sumRangeTo))
             data['errMsg']: str = errorMessage.message_id
 
     await state.set_data(data=data)  # -> SET DATA
