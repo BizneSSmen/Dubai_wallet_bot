@@ -62,7 +62,7 @@ class Database:
                 try:
                     await cursor.execute(query)
                     result = await cursor.fetchall()
-                    return Rates(**result)
+                    return Rates(**{f'{_["description"]}': _ for _ in result})
                 except Exception as e:
                     print(f"Error executing SQL query: {e}")
 
