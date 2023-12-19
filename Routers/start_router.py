@@ -1,10 +1,12 @@
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import KeyboardButton, Message, InlineKeyboardButton, ReplyKeyboardMarkup
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
 from Misc.buttons_text import MainMenu, ServiceButtons
 from Misc.message_text import Service
 from aiogram.fsm.context import FSMContext
+from aiomysql import Pool
+from DataBase import Database
+from Entities import Rates
 
 from Utils import GetCourse
 from params import AED, FEE
@@ -44,12 +46,15 @@ async def _cancel(message: Message, state: FSMContext):
 
 
 @mainMenu.message(F.text == MainMenu.course.value)
-async def _course(message: Message):
-    aedCourse: float = await GetCourse(*AED)()
-
+async def _course(message: Message, pool: Pool):
+    """
+    Получение актуальных курсов обмена валют
+    """
+    db: Database = Database(pool=pool)
+    rates: Rates = await db.getRates()
     await message.answer(text=Service.course.format(
-                             __AED_TO_RUB__=aedCourse + FEE,
-                             __RUB_TO_AED__=aedCourse - FEE))
+                             __AED_TO_RUB__=rates.buy.value,
+                             __RUB_TO_AED__=rates.sell.value))
 
 
 @mainMenu.message(F.text == MainMenu.faq.value)

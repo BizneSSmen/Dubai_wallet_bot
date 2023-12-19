@@ -1,20 +1,18 @@
 import re
 from math import trunc
-from pprint import pprint
 
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, InlineKeyboardButton, KeyboardButton, CallbackQuery, Document, ReplyKeyboardMarkup
+from aiogram.types import Message, InlineKeyboardButton, KeyboardButton, CallbackQuery, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 from aiomysql import Pool
 
 from Misc.buttons_text import MainMenu, BankList, LocationList, ServiceButtons
-from Misc.message_text import RubToAed, Service
+from Misc.message_text import RubToAed
 from DataBase import Database
-from Entities import Claim, OperationStatuses, OperationTypes, Rates
-from Utils import GetCourse, Notify
-from params import AED, FEE
+from Entities import Claim, OperationStatuses, Rates
+from Utils import Notify
 
 rubToAed: Router = Router()
 
