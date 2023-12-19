@@ -4,15 +4,14 @@ from math import ceil
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, InlineKeyboardButton, KeyboardButton, CallbackQuery, Document, ReplyKeyboardMarkup
+from aiogram.types import Message, InlineKeyboardButton, KeyboardButton, CallbackQuery, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 from aiomysql import Pool
 
 from Misc.buttons_text import MainMenu, BankList, LocationList, ServiceButtons
 from Misc.message_text import AedToRub
 from DataBase import Database
-from Models import ClaimModel
-from Entities import Claim, OperationStatuses, OperationTypes
+from Entities import Claim, OperationStatuses, Rates
 from Utils import GetCourse, Notify
 from params import AED, FEE
 
@@ -28,17 +27,19 @@ class AedToRubStates(StatesGroup):
 
 
 @aedToRub.message(F.text == MainMenu.aedToRub.value)
-async def _start(message: Message, state: FSMContext):
+async def _start(message: Message, state: FSMContext, pool: Pool):
     claim: Claim = Claim()
     claim.currency_A = 'AED'
     claim.currency_B = 'RUB'
+    db: Database = Database(pool=pool)
+    rates: Rates = await db.getRates()
 
     await message.answer(text=AedToRub.changeKbMessage,
                          reply_markup=ReplyKeyboardBuilder(
                              [[KeyboardButton(text=ServiceButtons.cancel.value)]]).as_markup(resize_keyboard=True))
 
     mainMsg: message = await message.answer(text=AedToRub.enterAmount)
-    data: dict = {'claim': claim, 'mainMsg': mainMsg.message_id}
+    data: dict = {'claim': claim, 'mainMsg': mainMsg.message_id, 'rates': rates}
 
     await state.set_state(AedToRubStates.amount)
     await state.set_data(data)  # -> SET DATA
@@ -51,29 +52,30 @@ async def _amount(message: Message, state: FSMContext, bot: Bot) -> None:
     """
     data: dict = await state.get_data()  # <- GET DATA
     claim: Claim = data['claim']
+    rates: Rates = data['rates']
 
     await message.delete()
 
     if message.text is not None:
         claim.targetAmount = int(message.text) if message.text.isdigit() else 0
 
-    if claim.targetAmount >= 2000:
+    if claim.targetAmount >= rates.buy.sumRangeTo:
         if 'errMsg' in data:
             await bot.delete_message(chat_id=message.chat.id, message_id=data['errMsg'])
             del data['errMsg']
 
         await bot.delete_message(chat_id=message.chat.id, message_id=data['mainMsg'])
 
-        claim.fee = FEE
-        claim.exchangeAppliedRate = await GetCourse(*AED)()
-        claim.finalAmount = ceil((claim.exchangeAppliedRate - claim.fee) * claim.targetAmount)
+        claim.exchangeAppliedRate = rates.buyBig.value if claim.targetAmount > rates.buy.sumRangeTo else rates.buy.value
+        claim.fee = abs(rates.official.value - claim.exchangeAppliedRate)
+        claim.finalAmount = ceil(claim.exchangeAppliedRate * claim.targetAmount)
 
         inlineKeyboard: InlineKeyboardBuilder = InlineKeyboardBuilder(
             [[InlineKeyboardButton(text=btnTxt.value, callback_data=f"{btnTxt.value}_bank") for btnTxt in
               BankList]])
         inlineKeyboard.adjust(3)
         mainMsg: Message = await message.answer(text=AedToRub.chooseBank.format(__TARGET_AMOUNT__=claim.targetAmount,
-                                                                                __COURSE__=claim.exchangeAppliedRate + claim.fee,
+                                                                                __COURSE__=claim.exchangeAppliedRate,
                                                                                 __FINAL_AMOUNT__=claim.finalAmount),
                                                 reply_markup=inlineKeyboard.as_markup())
 
@@ -85,7 +87,7 @@ async def _amount(message: Message, state: FSMContext, bot: Bot) -> None:
 
     else:
         if 'errMsg' not in data:
-            errorMessage: Message = await message.answer(text=AedToRub.amountError)
+            errorMessage: Message = await message.answer(text=AedToRub.amountError.format(__MIN__=rates.buy.sumRangeFrom))
             data['errMsg']: str = errorMessage.message_id
 
     await state.set_data(data=data)  # -> SET DATA
@@ -110,7 +112,7 @@ async def _bank(callback: CallbackQuery, state: FSMContext, bot: Bot):
     mainMsg: Message = await callback.message.answer(
         text=AedToRub.chooseLocation.format(__BANK__=data['bank'],
                                             __TARGET_AMOUNT__=claim.targetAmount,
-                                            __COURSE__=claim.exchangeAppliedRate + claim.fee,
+                                            __COURSE__=claim.exchangeAppliedRate,
                                             __FINAL_AMOUNT__=claim.finalAmount
                                             ), reply_markup=inlineKeyboard.as_markup())
 
@@ -139,7 +141,7 @@ async def _location(callback: CallbackQuery, state: FSMContext, bot: Bot):
     mainMsg: Message = await callback.message.answer(
         text=AedToRub.phoneNumber.format(__BANK__=data['bank'],
                                          __TARGET_AMOUNT__=claim.targetAmount,
-                                         __COURSE__=claim.exchangeAppliedRate + claim.fee,
+                                         __COURSE__=claim.exchangeAppliedRate,
                                          __FINAL_AMOUNT__=claim.finalAmount,
                                          __LOCATION__=data['location']
                                          ), reply_markup=keyboard.as_markup(resize_keyboard=True))
@@ -178,7 +180,7 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
 
         description: str = AedToRub.description.format(__BANK__=data['bank'][1:],
                                                        __TARGET_AMOUNT__=claim.targetAmount,
-                                                       __COURSE__=claim.exchangeAppliedRate + claim.fee,
+                                                       __COURSE__=claim.exchangeAppliedRate,
                                                        __FINAL_AMOUNT__=claim.finalAmount,
                                                        __LOCATION__=data['location'][1:],
                                                        __PHONE__=claim.phoneNumber)
@@ -189,7 +191,7 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
 
         mainMsg: Message = await message.answer(text=AedToRub.result.format(__BANK__=data['bank'],
                                                                             __TARGET_AMOUNT__=claim.targetAmount,
-                                                                            __COURSE__=claim.exchangeAppliedRate + claim.fee,
+                                                                            __COURSE__=claim.exchangeAppliedRate,
                                                                             __FINAL_AMOUNT__=claim.finalAmount,
                                                                             __LOCATION__=data['location'],
                                                                             __PHONE__=claim.phoneNumber,
@@ -214,11 +216,14 @@ async def _phoneNumber(message: Message, state: FSMContext, bot: Bot, pool: Pool
 
 @aedToRub.callback_query(F.data == 'done', AedToRubStates.accept)
 async def _accept(callback: CallbackQuery, state: FSMContext, bot: Bot, pool: Pool):
+    """
+    Подтверждение заявки
+    """
     data: dict = await state.get_data()  # <- GET DATA
     claim: Claim = data['claim']
     claim.status = OperationStatuses.approved
 
-    await Notify()(data['claimId'])
+    # await Notify()(data['claimId'])
 
     db: Database = Database(pool=pool)
     await db.updateClaimById(data['claimId'], {'status': OperationStatuses.approved})

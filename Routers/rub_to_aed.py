@@ -66,7 +66,7 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
         await bot.delete_message(chat_id=message.chat.id, message_id=data['mainMsg'])
 
         claim.exchangeAppliedRate = rates.sellBig.value if claim.targetAmount > rates.sellBig.sumRangeFrom else rates.sell.value
-        claim.fee = abs(rates.sell.value - rates.official.value)
+        claim.fee = abs(claim.exchangeAppliedRate - rates.official.value)
         claim.finalAmount = trunc((claim.targetAmount / claim.exchangeAppliedRate) / 10) * 10
 
         inlineKeyboard: InlineKeyboardBuilder = InlineKeyboardBuilder(
