@@ -35,5 +35,5 @@ class Rates(BaseModel):
     official: Official = Field(default=Official())
     sell: Sell = Field(default=Sell())
     buy: Buy = Field(default=Buy())
-    sellBig: SellBig = Field(default=SellBig())
-    buyBig: BuyBig = Field(default=BuyBig())
+    sellBig: SellBig = Field(default=SellBig(), alias='sellbig')
+    buyBig: BuyBig = Field(default=BuyBig(), alias='buybig')
