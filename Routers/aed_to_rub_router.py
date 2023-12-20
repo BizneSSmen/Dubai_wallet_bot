@@ -223,7 +223,7 @@ async def _accept(callback: CallbackQuery, state: FSMContext, bot: Bot, pool: Po
     claim: Claim = data['claim']
     claim.status = OperationStatuses.approved
 
-    # await Notify()(data['claimId'])
+    await Notify()(data['claimId'])
 
     db: Database = Database(pool=pool)
     await db.updateClaimById(data['claimId'], {'status': OperationStatuses.approved})
