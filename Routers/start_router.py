@@ -10,7 +10,9 @@ from Entities import Rates
 
 from Utils import GetCourse
 from params import AED, FEE
-
+"""
+Роутер стартового меню
+"""
 mainMenu: Router = Router()
 
 

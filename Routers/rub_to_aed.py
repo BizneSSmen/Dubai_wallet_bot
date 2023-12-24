@@ -14,6 +14,9 @@ from DataBase import Database
 from Entities import Claim, OperationStatuses, Rates
 from Utils import Notify
 
+"""
+Роутер продажи RUB/покупки AED
+"""
 rubToAed: Router = Router()
 
 
@@ -67,7 +70,7 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
 
         claim.exchangeAppliedRate = rates.sellBig.value if claim.targetAmount > rates.sellBig.sumRangeFrom else rates.sell.value
         claim.fee = abs(claim.exchangeAppliedRate - rates.official.value)
-        claim.finalAmount = trunc((claim.targetAmount / claim.exchangeAppliedRate) / 10) * 10
+        claim.finalAmount = trunc((claim.targetAmount / claim.exchangeAppliedRate) / 10) * 10  # Округление: сдвиг итоговой суммы на один поряток влево -> округление вверх -> сдвиг на один порядок вправо
 
         inlineKeyboard: InlineKeyboardBuilder = InlineKeyboardBuilder(
             [[InlineKeyboardButton(text=btnTxt.value, callback_data=f"{btnTxt.value}_bank") for btnTxt in
@@ -86,7 +89,8 @@ async def _amount(message: Message, state: FSMContext, bot: Bot):
 
     else:
         if 'errMsg' not in data:
-            errorMessage: Message = await message.answer(text=RubToAed.amountError.format(__MIN__=rates.sell.sumRangeFrom))
+            errorMessage: Message = await message.answer(
+                text=RubToAed.amountError.format(__MIN__=rates.sell.sumRangeFrom))
             data['errMsg']: str = errorMessage.message_id
 
     await state.set_data(data=data)  # -> SET DATA

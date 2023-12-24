@@ -11,12 +11,13 @@ class MainMenu(Enum):
 class BankList(Enum):
     bank1: str = "🟢 Сбербанк"
     bank2: str = "🟡 Тинькофф"
-    bank3: str = "🔴 Альфабанк"
+    bank3: str = "🔴 Альфа-банк"
 
 
 class LocationList(Enum):
     location1: str = "📍Dubai Mall"
-    location2: str = "📍Mall Of The Emirates"
+    location2: str = "📍Dubai Marina Mall"
+    location3: str = "📍Nakheel Mall"
 
 
 class ServiceButtons(Enum):

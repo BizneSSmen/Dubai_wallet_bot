@@ -12,9 +12,10 @@ from Misc.buttons_text import MainMenu, BankList, LocationList, ServiceButtons
 from Misc.message_text import AedToRub
 from DataBase import Database
 from Entities import Claim, OperationStatuses, Rates
-from Utils import GetCourse, Notify
-from params import AED, FEE
-
+from Utils import Notify
+"""
+Роутер продажи AED/покупки RUB
+"""
 aedToRub: Router = Router()
 
 

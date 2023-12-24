@@ -15,5 +15,8 @@ class DataBaseMiddleWare(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
+        """
+        Метод проброса пула соединений в хэндлер
+        """
         data["pool"] = self.pool
         await handler(event, data)

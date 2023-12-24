@@ -3,7 +3,17 @@ from aiomysql import Pool
 from Entities import Rates
 
 
-async def createPool(user: str, password: str, address: str, port: str, db: str, loop):
+async def createPool(user: str, password: str, address: str, port: str, db: str, loop) -> Pool:
+    """
+    Создание кэшированного пула подключений
+    :param user: имя пользователя
+    :param password: пароль
+    :param address: адрес базы данных
+    :param port: порт
+    :param db: имя базы данных
+    :param loop: цикл событий
+    :return: кэшированный пул соединения
+    """
     return await aiomysql.create_pool(host=address,
                                       port=port,
                                       user=user,
@@ -19,6 +29,11 @@ class Database:
         self.pool = pool
 
     async def insertСlaim(self, claim: dict) -> int:
+        """
+        Метод вставки новой записи в таблицу claims
+        :param claim: словарь
+        :return: идентификтор созданной записи
+        """
         sql = """
         INSERT INTO claims (
             operation_type, description, tel, status, sum_A, sum_B, exchange_applied_rate, fee, currency_A,
@@ -41,7 +56,13 @@ class Database:
                 except Exception as e:
                     print(f"Error executing SQL query: {e}")
 
-    async def updateClaimById(self, claim_id: int, updates: dict):
+    async def updateClaimById(self, claim_id: int, updates: dict) -> None:
+        """
+        Метод обновления записи
+        :param claim_id: идентификатор записи
+        :param updates: обновляемые данные {поле: данные}
+        :return: None
+        """
         queries: list[str] = [f"UPDATE claims SET {field} WHERE id = %s" for field in [f'{key} = %s' for key in updates.keys()]]
         values: list = list(updates.values())
         resultQueries = list(zip(queries, list(zip(values, [claim_id]*len(values)))))
@@ -55,7 +76,11 @@ class Database:
                     except Exception as e:
                         print(f"Error executing SQL query: {e}")
 
-    async def getRates(self):
+    async def getRates(self) -> Rates:
+        """
+        Метод получения курса валют
+        :return: объект класса Rates
+        """
         query = f"SELECT * FROM rates"
         async with self.pool.acquire() as connection:
             async with connection.cursor() as cursor:
