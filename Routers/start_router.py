@@ -56,7 +56,9 @@ async def _course(message: Message, pool: Pool):
     rates: Rates = await db.getRates()
     await message.answer(text=Service.course.format(
                              __AED_TO_RUB__=rates.buy.value,
-                             __RUB_TO_AED__=rates.sell.value))
+                             __RUB_TO_AED__=rates.sell.value,
+                            __AED_TO_RUB_MIN__=rates.buyBig.value,
+                            __RUB_TO_AED_MIN__=rates.sellBig.value))
 
 
 @mainMenu.message(F.text == MainMenu.faq.value)
