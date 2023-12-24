@@ -16,9 +16,10 @@ class BankList(Enum):
 
 class LocationList(Enum):
     location1: str = "📍Dubai Mall"
-    location2: str = "📍Dubai Marina Mall"
-    location3: str = "📍Nakheel Mall"
-    location4: str = "📍Mall of Emirates"
+    location2: str = "📍Mall of Emirates"
+    location3: str = "📍Dubai Marina Mall"
+    location4: str = "📍Nakheel Mall"
+
 
 
 class ServiceButtons(Enum):
