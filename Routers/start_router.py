@@ -18,7 +18,7 @@ mainMenu: Router = Router()
 
 
 @mainMenu.message(Command("start"))
-async def _start(message: Message, state: FSMContext):
+async def _start(message: Message, state: FSMContext, pool: Pool):
     await state.clear()
 
     aedCourse: float = await GetCourse(*AED)()
@@ -28,11 +28,14 @@ async def _start(message: Message, state: FSMContext):
                  [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
         resize_keyboard=True
     )
+    db: Database = Database(pool=pool)
+    rates: Rates = await db.getRates()
+    await message.answer(text=Service.start.format(
+        __AED_TO_RUB__=rates.buy.value,
+        __RUB_TO_AED__=rates.sell.value,
+        __AED_TO_RUB_MIN__=rates.buyBig.value,
+        __RUB_TO_AED_MIN__=rates.sellBig.value))
 
-    await message.answer(reply_markup=keyboard,
-                         text=Service.start.format(
-                             __AED_TO_RUB__=aedCourse + FEE,
-                             __RUB_TO_AED__=aedCourse - FEE))
 
 
 @mainMenu.message(F.text == ServiceButtons.cancel.value)
