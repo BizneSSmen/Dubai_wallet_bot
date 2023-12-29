@@ -58,7 +58,7 @@ async def _amount(message: Message, state: FSMContext, bot: Bot) -> None:
     await message.delete()
 
     if message.text is not None:
-        claim.targetAmount = int(message.text) if message.text.isdigit() else 0
+        claim.targetAmount = float(message.text) if message.text.isdigit() else 0
 
     if claim.targetAmount >= rates.buy.sumRangeFrom:
         if 'errMsg' in data:
