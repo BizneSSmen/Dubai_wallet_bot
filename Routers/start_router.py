@@ -34,8 +34,7 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
         __AED_TO_RUB__=rates.buy.value,
         __RUB_TO_AED__=rates.sell.value,
         __AED_TO_RUB_MIN__=rates.buyBig.value,
-        __RUB_TO_AED_MIN__=rates.sellBig.value))
-
+        __RUB_TO_AED_MIN__=rates.sellBig.value), reply_markup=keyboard)
 
 
 @mainMenu.message(F.text == ServiceButtons.cancel.value)
