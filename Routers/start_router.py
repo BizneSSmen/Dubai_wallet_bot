@@ -17,7 +17,7 @@ from params import AED, FEE
 mainMenu: Router = Router()
 
 
-@mainMenu.message(Command("start"))
+@mainMenu.message(Command("start"), Command("restart"))
 async def _start(message: Message, state: FSMContext, pool: Pool):
     await state.clear()
 
