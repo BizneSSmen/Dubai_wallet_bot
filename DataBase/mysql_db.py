@@ -93,7 +93,7 @@ class Database:
     
     
     async def addUserId(self, id: str):
-        query = "SELECT * FROM vars WHERE id = %s"
+        query = "SELECT * FROM vars WHERE user_id = %s"
         
         async with self.pool.acquire() as connection:
             async with connection.cursor() as cursor:
