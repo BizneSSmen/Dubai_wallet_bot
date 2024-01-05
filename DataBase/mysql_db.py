@@ -97,13 +97,13 @@ class Database:
         
         async with self.pool.acquire() as connection:
             async with connection.cursor() as cursor:
-                try:
+                # try:
                     await cursor.execute(query, (id,))
                     result = await cursor.fetchall()
                     if len(result) == 0:
                         insertQuery = "INSERT INTO vars (user_id, value) VALUES (%s, 1) ON DUPLICATE KEY UPDATE value = value + 1"
                         cursor.execute(insertQuery, (id,))
                         await connection.commit()
-                except Exception as e:
-                    pass
+                # except Exception as e:
+                #     pass
 
