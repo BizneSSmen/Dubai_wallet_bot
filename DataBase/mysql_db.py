@@ -102,7 +102,7 @@ class Database:
                     result = await cursor.fetchall()
                     if len(result) == 0:
                         insertQuery = "INSERT INTO vars (user_id, value) VALUES (%s, 1) ON DUPLICATE KEY UPDATE value = value + 1"
-                        cursor.execute(insertQuery, (id,))
+                        await cursor.execute(insertQuery, (id,))
                         await connection.commit()
                 # except Exception as e:
                 #     pass
