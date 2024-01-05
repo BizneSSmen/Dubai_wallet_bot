@@ -101,8 +101,10 @@ class Database:
                     await cursor.execute(query, (id,))
                     result = await cursor.fetchall()
                     if len(result) == 0:
-                        insertQuery = "INSERT INTO vars (user_id, value) VALUES (%s, 1) ON DUPLICATE KEY UPDATE value = value + 1"
+                        insertQuery = "INSERT INTO vars (user_id) VALUES (%s)"
+                        count = "UPDATE vars SET value = value + 1 WHERE name = bot_users_count"
                         await cursor.execute(insertQuery, (id,))
+                        await cursor.execute(count)
                         await connection.commit()
                 # except Exception as e:
                 #     pass
