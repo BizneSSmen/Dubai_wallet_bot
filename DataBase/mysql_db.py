@@ -101,10 +101,11 @@ class Database:
                     await cursor.execute(query, (id,))
                     result = await cursor.fetchall()
                     if len(result) == 0:
-                        insertQuery = "INSERT INTO vars (user_id) VALUES (%s)"
-                        count = "UPDATE vars SET value = value + 1 WHERE name = 'bot_users_count'"
-                        await cursor.execute(insertQuery, (id,))
-                        await cursor.execute(count)
+                        combinedQuery = """
+                            INSERT INTO vars (user_id) VALUES (%s);
+                            UPDATE vars SET value = value + 1 WHERE name = 'bot_users_count';
+                        """
+                        await cursor.execute(combinedQuery, (id,))
                         await connection.commit()
                 # except Exception as e:
                 #     pass
