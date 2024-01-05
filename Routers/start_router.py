@@ -20,15 +20,15 @@ mainMenu: Router = Router()
 @mainMenu.message(Command("start"))
 async def _start(message: Message, state: FSMContext, pool: Pool):
     await state.clear()
-
-    aedCourse: float = await GetCourse(*AED)()
-
+    db: Database = Database(pool=pool)
+    await db.addUserId(message.from_user.id)
+    
     keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
         keyboard=[[KeyboardButton(text=btnTxt.value)] for btnTxt in list(MainMenu)[:2]] +
                  [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
         resize_keyboard=True
     )
-    db: Database = Database(pool=pool)
+    
     rates: Rates = await db.getRates()
     await message.answer(text=Service.start.format(
         __AED_TO_RUB__=rates.buy.value,

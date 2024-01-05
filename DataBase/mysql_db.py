@@ -90,4 +90,20 @@ class Database:
                     return Rates(**{f'{_["description"]}': _ for _ in result})
                 except Exception as e:
                     print(f"Error executing SQL query: {e}")
+    
+    
+    async def addUserId(self, id: str):
+        query = "SELECT * FROM vars WHERE id = %s"
+        
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                try:
+                    await cursor.execute(query, (id,))
+                    result = await cursor.fetchall()
+                    if len(result) == 0:
+                        insertQuery = "INSERT INTO vars (user_id, value) VALUES (%s, 1) ON DUPLICATE KEY UPDATE value = value + 1"
+                        cursor.execute(insertQuery, (id,))
+                        await connection.commit()
+                except Exception as e:
+                    pass
 
