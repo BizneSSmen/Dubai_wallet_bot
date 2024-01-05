@@ -16,8 +16,8 @@ from params import AED, FEE
 """
 mainMenu: Router = Router()
 
-
-@mainMenu.message(Command("start"), Command("restart"))
+@mainMenu.message(Command("restart"))
+@mainMenu.message(Command("start"))
 async def _start(message: Message, state: FSMContext, pool: Pool):
     await state.clear()
 
@@ -50,6 +50,7 @@ async def _cancel(message: Message, state: FSMContext):
     await message.answer(text=Service.cancelled, reply_markup=keyboard)
 
 
+@mainMenu.message(Command("course"))
 @mainMenu.message(F.text == MainMenu.course.value)
 async def _course(message: Message, pool: Pool):
     """
@@ -64,6 +65,7 @@ async def _course(message: Message, pool: Pool):
         __RUB_TO_AED_MIN__=rates.sellBig.value))
 
 
+@mainMenu.message(Command("faq"))
 @mainMenu.message(F.text == MainMenu.faq.value)
 async def _faq(message: Message):
     await message.answer(text=Service.faq)

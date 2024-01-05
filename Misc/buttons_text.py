@@ -5,7 +5,7 @@ class MainMenu(Enum):
     aedToRub: str = "🇦🇪 Обменять дирхамы"
     rubToAed: str = "🇷🇺 Обменять рубли"
     course: str = "📊 Текущий курс"
-    faq: str = "Что можно? ❔"
+    faq: str = "Что можно?"
 
 
 class BankList(Enum):

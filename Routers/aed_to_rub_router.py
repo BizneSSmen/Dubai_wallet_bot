@@ -1,6 +1,7 @@
 import re
 from math import ceil
 
+from aiogram.filters import Command
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -27,6 +28,7 @@ class AedToRubStates(StatesGroup):
     accept: State = State()
 
 
+@aedToRub.message(Command("aed_to_rub"))
 @aedToRub.message(F.text == MainMenu.aedToRub.value)
 async def _start(message: Message, state: FSMContext, pool: Pool):
     claim: Claim = Claim()
@@ -104,7 +106,7 @@ async def _bank(callback: CallbackQuery, state: FSMContext, bot: Bot):
     claim: Claim = data['claim']
 
     await bot.delete_message(chat_id=callback.message.chat.id, message_id=data['mainMsg'])
-
+    await callback.answer()
     inlineKeyboard: InlineKeyboardBuilder = InlineKeyboardBuilder(
         [[InlineKeyboardButton(text=btnTxt.value, callback_data=f"{btnTxt.value}_location") for btnTxt in
           LocationList]])
@@ -134,7 +136,7 @@ async def _location(callback: CallbackQuery, state: FSMContext, bot: Bot):
     claim: Claim = data['claim']
 
     await bot.delete_message(chat_id=callback.message.chat.id, message_id=data['mainMsg'])
-
+    await callback.answer()
     keyboard: ReplyKeyboardBuilder = ReplyKeyboardBuilder(
         [[KeyboardButton(text=ServiceButtons.sharePhoneNumber.value, request_contact=True),
           KeyboardButton(text=ServiceButtons.cancel.value)]])
