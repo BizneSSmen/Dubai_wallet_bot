@@ -97,16 +97,13 @@ class Database:
         
         async with self.pool.acquire() as connection:
             async with connection.cursor() as cursor:
-                # try:
+                try:
                     await cursor.execute(query, (id,))
                     result = await cursor.fetchall()
                     if len(result) == 0:
-                        combinedQuery = """
-                            INSERT INTO vars (user_id) VALUES (%s);
-                            UPDATE vars SET value = value + 1 WHERE name = 'bot_users_count';
-                        """
-                        await cursor.execute(combinedQuery, (id,))
+                        query = "INSERT INTO vars (user_id) VALUES (%s);"
+                        await cursor.execute(query, (id,))
                         await connection.commit()
-                # except Exception as e:
-                #     pass
+                except Exception as e:
+                    pass
 
