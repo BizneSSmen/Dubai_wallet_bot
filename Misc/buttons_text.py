@@ -21,7 +21,6 @@ class LocationList(Enum):
     location4: str = "📍Nakheel Mall"
 
 
-
 class ServiceButtons(Enum):
     cancel: str = "❌ Отменить"
     sharePhoneNumber: str = "Поделиться номером телефона"

@@ -48,6 +48,25 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
     await state.set_data(data)  # -> SET DATA
 
 
+@aedToRub.message(Command("aed_to_rub"))
+async def _restart(message: Message, state: FSMContext, pool: Pool):
+    claim: Claim = Claim()
+    claim.currency_A = 'AED'
+    claim.currency_B = 'RUB'
+    db: Database = Database(pool=pool)
+    rates: Rates = await db.getRates()
+
+    await message.answer(text=AedToRub.changeKbMessage,
+                         reply_markup=ReplyKeyboardBuilder(
+                             [[KeyboardButton(text=ServiceButtons.cancel.value)]]).as_markup(resize_keyboard=True))
+
+    mainMsg: message = await message.answer(text=AedToRub.enterAmount)
+    data: dict = {'claim': claim, 'mainMsg': mainMsg.message_id, 'rates': rates}
+
+    await state.set_state(AedToRubStates.amount)
+    await state.set_data(data)  # -> SET DATA
+
+
 @aedToRub.message(AedToRubStates.amount)
 async def _amount(message: Message, state: FSMContext, bot: Bot) -> None:
     """
