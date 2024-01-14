@@ -11,6 +11,8 @@ from Routers import routers
 
 from Middlewares import DataBaseMiddleWare
 
+from Misc.message_text import Service
+
 
 async def main():
     logging.basicConfig(
@@ -30,7 +32,7 @@ async def main():
                                   loop=loop)
 
     bot: Bot = Bot(config.tgBot.userToken, parse_mode="HTML")
-
+    await bot.set_my_description(description=Service.faq)
     dp: Dispatcher = Dispatcher(storage=MemoryStorage(), loop=loop)
     dp.message.outer_middleware(DataBaseMiddleWare(pool=pool))
     dp.callback_query.outer_middleware(DataBaseMiddleWare(pool=pool))
