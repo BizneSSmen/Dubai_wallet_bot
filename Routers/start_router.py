@@ -37,10 +37,35 @@ async def _start(message: Message, state: FSMContext, pool: Pool):
         __RUB_TO_AED_MIN__=rates.sellBig.value), reply_markup=keyboard)
 
 
+@mainMenu.message(F.text == ServiceButtons.cancel.value)
+async def _start(message: Message, state: FSMContext, pool: Pool):
+    await state.clear()
+    db: Database = Database(pool=pool)
+    await message.answer(text=Service.cancelled)
+
+    keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text=btnTxt.value)] for btnTxt in list(MainMenu)[:2]] +
+                 [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
+        resize_keyboard=True
+    )
+
+    rates: Rates = await db.getRates()
+    await message.answer(text=Service.start.format(
+        __AED_TO_RUB__=rates.buy.value,
+        __RUB_TO_AED__=rates.sell.value,
+        __AED_TO_RUB_MIN__=rates.buyBig.value,
+        __RUB_TO_AED_MIN__=rates.sellBig.value), reply_markup=keyboard)
+
+
 @mainMenu.message(Command("restart"))
 async def _restart(message: Message, state: FSMContext, pool: Pool):
     await state.clear()
-    await message.answer_photo(caption=Service.faq, photo=FSInputFile("Misc/faq_media.jpg"))
+    keyboard: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text=btnTxt.value)] for btnTxt in list(MainMenu)[:2]] +
+                 [[KeyboardButton(text=btnTxt.value) for btnTxt in list(MainMenu)[2:]]],
+        resize_keyboard=True
+    )
+    await message.answer_photo(caption=Service.faq, photo=FSInputFile("Misc/faq_media.jpg"), reply_markup=keyboard)
 
 
 @mainMenu.message(Command("course"))
